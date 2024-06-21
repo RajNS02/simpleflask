@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 import pickle
 
+from pii_det import remove_sensitive_info
 
 # -------PDF UPLOAD ISTARTS---------
 # from fastapi import FastAPI, File, UploadFile
@@ -48,8 +49,9 @@ async def basic():
 @app.route("/ask",methods=['GET'])
 async def basic_ask():
     prompt=request.args["query"]
+    prompt=remove_sensitive_info(query)
     result=model.invoke([prompt]).content
-    return {"response":result}
+    return {"response": result}
 
 UPLOAD_FOLDER = './'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -90,6 +92,7 @@ loaded_data = ""
 @app.route("/rag",methods=["GET", "POST"])
 async def rag():
             query=request.args["query"]
+            query=remove_sensitive_info(query)
             # # loading--------------
             # Open the file in binary mode
             with open(os.getenv("file_path"), 'rb') as file:
